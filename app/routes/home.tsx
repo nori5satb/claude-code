@@ -52,6 +52,19 @@ export async function action({ request, context }: Route.ActionArgs) {
     return redirect("/");
   }
   
+  if (action === "delete") {
+    const id = parseInt(formData.get("id") as string);
+    
+    if (!id) {
+      return { error: "Todo ID is required" };
+    }
+    
+    // TODOを削除
+    await context.db.delete(todos).where(eq(todos.id, id));
+    
+    return redirect("/");
+  }
+  
   // 新しいTODOの作成
   const text = formData.get("text") as string;
   
