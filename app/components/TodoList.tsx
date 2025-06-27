@@ -1,4 +1,5 @@
 import { Form } from "react-router";
+import { useState } from "react";
 
 export interface TodoItem {
   id: number;
@@ -11,6 +12,27 @@ interface TodoListProps {
 }
 
 export const TodoList = ({ todos }: TodoListProps) => {
+  const [editingId, setEditingId] = useState<number | null>(null);
+  const [editText, setEditText] = useState<string>("");
+
+  const handleStartEdit = (todo: TodoItem) => {
+    setEditingId(todo.id);
+    setEditText(todo.text);
+  };
+
+  const handleCancelEdit = () => {
+    setEditingId(null);
+    setEditText("");
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Escape") {
+      handleCancelEdit();
+    } else if (e.key === "Enter") {
+      // EnterキーでFormが自動的にsubmitされるため、特別な処理は不要
+    }
+  };
+
   return (
     <main className="flex items-center justify-center pt-16 pb-4">
       <div className="flex-1 flex flex-col items-center gap-16 min-h-0 max-w-2xl">
@@ -71,15 +93,45 @@ export const TodoList = ({ todos }: TodoListProps) => {
                         />
                       </button>
                     </Form>
-                    <span
-                      className={`flex-1 ${
-                        todo.completed
-                          ? "line-through text-gray-500 dark:text-gray-400"
-                          : "text-gray-800 dark:text-gray-200"
-                      }`}
-                    >
-                      {todo.text}
-                    </span>
+                    {editingId === todo.id ? (
+                      <Form method="post" className="flex-1 flex gap-2">
+                        <input type="hidden" name="action" value="update" />
+                        <input type="hidden" name="id" value={todo.id} />
+                        <input
+                          type="text"
+                          name="text"
+                          value={editText}
+                          onChange={(e) => setEditText(e.target.value)}
+                          onKeyDown={handleKeyDown}
+                          autoFocus
+                          className="flex-1 px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-800 dark:border-gray-600 dark:text-gray-100"
+                        />
+                        <button
+                          type="submit"
+                          className="px-2 py-1 bg-green-600 text-white text-sm rounded hover:bg-green-700 focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors dark:focus:ring-offset-gray-900"
+                        >
+                          保存
+                        </button>
+                        <button
+                          type="button"
+                          onClick={handleCancelEdit}
+                          className="px-2 py-1 bg-gray-600 text-white text-sm rounded hover:bg-gray-700 focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors dark:focus:ring-offset-gray-900"
+                        >
+                          キャンセル
+                        </button>
+                      </Form>
+                    ) : (
+                      <span
+                        onClick={() => handleStartEdit(todo)}
+                        className={`flex-1 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 px-2 py-1 rounded transition-colors ${
+                          todo.completed
+                            ? "line-through text-gray-500 dark:text-gray-400"
+                            : "text-gray-800 dark:text-gray-200"
+                        }`}
+                      >
+                        {todo.text}
+                      </span>
+                    )}
                     <Form method="post" className="inline">
                       <input type="hidden" name="action" value="delete" />
                       <input type="hidden" name="id" value={todo.id} />

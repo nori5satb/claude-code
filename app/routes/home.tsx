@@ -65,6 +65,29 @@ export async function action({ request, context }: Route.ActionArgs) {
     return redirect("/");
   }
   
+  if (action === "update") {
+    const id = parseInt(formData.get("id") as string);
+    const text = formData.get("text") as string;
+    
+    if (!id) {
+      return { error: "Todo ID is required" };
+    }
+    
+    if (!text || text.trim() === "") {
+      return { error: "Todo text is required" };
+    }
+    
+    // TODOを更新
+    await context.db.update(todos)
+      .set({ 
+        text: text.trim(),
+        updated_at: new Date()
+      })
+      .where(eq(todos.id, id));
+    
+    return redirect("/");
+  }
+  
   // 新しいTODOの作成
   const text = formData.get("text") as string;
   
