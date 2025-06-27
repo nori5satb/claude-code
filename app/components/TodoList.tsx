@@ -59,12 +59,18 @@ export const TodoList = ({ todos }: TodoListProps) => {
                     key={todo.id}
                     className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
                   >
-                    <input
-                      type="checkbox"
-                      checked={todo.completed}
-                      readOnly
-                      className="w-4 h-4 text-blue-500 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:border-gray-600"
-                    />
+                    <Form method="post" className="inline">
+                      <input type="hidden" name="action" value="toggle" />
+                      <input type="hidden" name="id" value={todo.id} />
+                      <button type="submit" className="w-4 h-4 relative">
+                        <input
+                          type="checkbox"
+                          checked={todo.completed}
+                          readOnly
+                          className="w-4 h-4 text-blue-500 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:border-gray-600 pointer-events-none"
+                        />
+                      </button>
+                    </Form>
                     <span
                       className={`flex-1 ${
                         todo.completed
