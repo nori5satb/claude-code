@@ -15,43 +15,60 @@ describe('Home Route Logic', () => {
     });
   });
 
-  describe('hardcoded todos data', () => {
-    it('should have correct data structure for todos', () => {
-      const mockTodos = [
-        { id: 1, text: "Learn React Router v7", completed: true },
-        { id: 2, text: "Build a todo app", completed: false },
-        { id: 3, text: "Write tests", completed: false },
-        { id: 4, text: "Deploy to Cloudflare Workers", completed: false },
-        { id: 5, text: "Implement todo CRUD operations", completed: false },
+  describe('todo creation validation', () => {
+    it('should validate required text field', () => {
+      const validTodoText = "Learn React Router v7";
+      const emptyTodoText = "";
+      const whitespaceTodoText = "   ";
+      
+      expect(validTodoText.trim()).toBeTruthy();
+      expect(emptyTodoText.trim()).toBeFalsy();
+      expect(whitespaceTodoText.trim()).toBeFalsy();
+    });
+
+    it('should handle form data structure correctly', () => {
+      const mockFormData = new FormData();
+      mockFormData.append('text', 'New todo item');
+      
+      const text = mockFormData.get('text') as string;
+      expect(text).toBe('New todo item');
+      expect(typeof text).toBe('string');
+    });
+  });
+
+  describe('todo data transformation', () => {
+    it('should transform database todos to component format', () => {
+      const dbTodos = [
+        { 
+          id: 1, 
+          text: "Learn React Router v7", 
+          completed: true,
+          created_at: new Date(),
+          updated_at: new Date()
+        },
+        { 
+          id: 2, 
+          text: "Build a todo app", 
+          completed: false,
+          created_at: new Date(),
+          updated_at: new Date()
+        },
       ];
       
-      expect(mockTodos).toHaveLength(5);
-      expect(mockTodos[0].completed).toBe(true);
+      const transformedTodos = dbTodos.map(todo => ({
+        id: todo.id,
+        text: todo.text,
+        completed: todo.completed
+      }));
       
-      mockTodos.forEach((todo) => {
+      expect(transformedTodos).toHaveLength(2);
+      transformedTodos.forEach((todo) => {
         expect(todo).toHaveProperty('id');
         expect(todo).toHaveProperty('text');
         expect(todo).toHaveProperty('completed');
-        expect(typeof todo.id).toBe('number');
-        expect(typeof todo.text).toBe('string');
-        expect(typeof todo.completed).toBe('boolean');
+        expect(todo).not.toHaveProperty('created_at');
+        expect(todo).not.toHaveProperty('updated_at');
       });
-    });
-
-    it('should have at least one completed and one incomplete todo', () => {
-      const mockTodos = [
-        { id: 1, text: "Learn React Router v7", completed: true },
-        { id: 2, text: "Build a todo app", completed: false },
-        { id: 3, text: "Write tests", completed: false },
-        { id: 4, text: "Deploy to Cloudflare Workers", completed: false },
-        { id: 5, text: "Implement todo CRUD operations", completed: false },
-      ];
-      
-      const completedTodos = mockTodos.filter(todo => todo.completed);
-      const incompleteTodos = mockTodos.filter(todo => !todo.completed);
-      
-      expect(completedTodos.length).toBeGreaterThan(0);
-      expect(incompleteTodos.length).toBeGreaterThan(0);
     });
   });
 });

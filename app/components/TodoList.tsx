@@ -1,3 +1,5 @@
+import { Form } from "react-router";
+
 export interface TodoItem {
   id: number;
   text: string;
@@ -19,6 +21,28 @@ export const TodoList = ({ todos }: TodoListProps) => {
         </header>
         
         <div className="w-full space-y-6 px-4">
+          <section className="rounded-3xl border border-gray-200 p-6 dark:border-gray-700">
+            <h2 className="text-xl font-semibold mb-6 text-gray-800 dark:text-gray-200">
+              Add New Task
+            </h2>
+            
+            <Form method="post" className="flex gap-3">
+              <input
+                type="text"
+                name="text"
+                placeholder="Enter a new task..."
+                required
+                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-800 dark:border-gray-600 dark:text-gray-100 dark:placeholder-gray-400"
+              />
+              <button
+                type="submit"
+                className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors dark:focus:ring-offset-gray-900"
+              >
+                Add Todo
+              </button>
+            </Form>
+          </section>
+          
           <section className="rounded-3xl border border-gray-200 p-6 dark:border-gray-700">
             <h2 className="text-xl font-semibold mb-6 text-gray-800 dark:text-gray-200">
               Your Tasks

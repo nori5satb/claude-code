@@ -1,5 +1,7 @@
 import type { Route } from "./+types/home";
-import { TodoList, type TodoItem } from "../components/TodoList";
+import { TodoList } from "../components/TodoList";
+import { todos } from "../../database/schema";
+import { redirect } from "react-router";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -8,16 +10,34 @@ export function meta({}: Route.MetaArgs) {
   ];
 }
 
-export async function loader({}: Route.LoaderArgs) {
-  const todos: TodoItem[] = [
-    { id: 1, text: "Learn React Router v7", completed: true },
-    { id: 2, text: "Build a todo app", completed: false },
-    { id: 3, text: "Write tests", completed: false },
-    { id: 4, text: "Deploy to Cloudflare Workers", completed: false },
-    { id: 5, text: "Implement todo CRUD operations", completed: false },
-  ];
+export async function loader({ context }: Route.LoaderArgs) {
+  const todoItems = await context.db.select().from(todos).orderBy(todos.created_at);
+  
+  return { 
+    todos: todoItems.map(todo => ({
+      id: todo.id,
+      text: todo.text,
+      completed: todo.completed
+    }))
+  };
+}
 
-  return { todos };
+export async function action({ request, context }: Route.ActionArgs) {
+  const formData = await request.formData();
+  const text = formData.get("text") as string;
+  
+  if (!text || text.trim() === "") {
+    return { error: "Todo text is required" };
+  }
+  
+  await context.db.insert(todos).values({
+    text: text.trim(),
+    completed: false,
+    created_at: new Date(),
+    updated_at: new Date(),
+  });
+  
+  return redirect("/");
 }
 
 export default function Home({ loaderData }: Route.ComponentProps) {
