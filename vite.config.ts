@@ -4,11 +4,18 @@ import tailwindcss from "@tailwindcss/vite";
 import { defineConfig } from "vite";
 import tsconfigPaths from "vite-tsconfig-paths";
 
-export default defineConfig({
+export default defineConfig(({ command, mode }) => ({
   plugins: [
-    cloudflare({ viteEnvironment: { name: "ssr" } }),
+    ...(mode !== "test" ? [
+      cloudflare({ viteEnvironment: { name: "ssr" } }),
+      reactRouter(),
+    ] : []),
     tailwindcss(),
-    reactRouter(),
     tsconfigPaths(),
   ],
-});
+  test: {
+    environment: "jsdom",
+    setupFiles: ["./test/setup.ts"],
+    globals: true,
+  },
+}));
