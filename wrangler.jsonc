@@ -1,8 +1,9 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "react-router-app",
+  "name": "claude-code-todo-app",
   "compatibility_date": "2025-04-04",
   "main": "./workers/app.ts",
+  "route": "claude-code-todo-app.nori5satb.workers.dev",
   "vars": {
     "VALUE_FROM_CLOUDFLARE": "Hello from Cloudflare"
   },
@@ -10,7 +11,7 @@
     {
       "binding": "DB",
       "database_name": "todo-db",
-      "database_id": "your-database-id",
+      "database_id": "7304d055-d7ed-4175-8ac2-31bcf7ead873",
       "migrations_dir": "drizzle"
     }
   ]
